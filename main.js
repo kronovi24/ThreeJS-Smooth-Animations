@@ -43,7 +43,7 @@ for (let i = 0; i < angle.length; i++) {
     const material = new THREE.MeshStandardMaterial({
         color: 0x00ff00,
         emissive: 0x00ff00,
-        emissiveIntensity: 0.3,
+        emissiveIntensity: 0.3  ,
     });
 
     const mesh = new THREE.Mesh(geometry, material);
@@ -63,7 +63,8 @@ scene.add(ambientLight);
 let rotation = 0.01;
 let isMouseDown = false;
 let clickCount = 0;
-const colors = [0xff0000, 0x00ff00 , 0x7513CC , 0xCC13a8 ];
+const colors = [
+    0xff0000, 0x00ff00 , 0x7513CC , 0xCC13a8 , 0x2e1fe7  ];
 
 window.addEventListener('click', () => {
     clickCount = (clickCount + 1) % colors.length;
@@ -77,8 +78,8 @@ window.addEventListener('mousedown', () => {
     isMouseDown = true;
     rotation = 0.05;
     cube.forEach((c, i) => {
-        targetPositions[i].x = originalPositions[i].x * 1.6;
-        targetPositions[i].y = originalPositions[i].y * 1.6;
+        targetPositions[i].x = originalPositions[i].x * 5;
+        targetPositions[i].y = originalPositions[i].y * 5;
     });
 });
 
@@ -105,8 +106,8 @@ function animate() {
 
         // Mouse follow
         if (!isMouseDown) {
-            element.position.x += ((mouse.x) + originalPositions[i].x - element.position.x) * 0.05;
-            element.position.y += ((mouse.y) + originalPositions[i].y - element.position.y) * 0.05;
+            element.position.x += ((mouse.x * 10) + originalPositions[i].x - element.position.x) * 0.05;
+            element.position.y += ((mouse.y * 10) + originalPositions[i].y - element.position.y) * 0.05;
         }
     });
 
