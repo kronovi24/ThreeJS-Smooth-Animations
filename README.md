@@ -1,6 +1,6 @@
 # 🚀 ThreeJs Smooth Animations
 
-A Smooth 3d animations powered by ThreeJS 
+Complitions of Smooth 3d animations powered by ThreeJS 
 
 ---
 
