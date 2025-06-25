@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@react-three/postprocessing": "^3.0.4",
+    "three": "^0.177.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}
