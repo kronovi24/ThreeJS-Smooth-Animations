@@ -28,32 +28,41 @@ window.addEventListener('mousemove', (event) => {
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 });
 
-// Cubes
-let cube = [];
-let angle = [
-    [0, 0], [0, 3], [3, 0], [0, -3], [-3, 0],
-    [3, 3], [3, -3], [-3, -3], [-3, 3],
-];
+const CUBE_COUNT = 16; // Change this value as needed
 
+// Calculate grid size (square or nearly square)
+const gridSize = Math.ceil(Math.sqrt(CUBE_COUNT));
+const spacing = 3; // Distance between cubes
+
+let cube = [];
 const originalPositions = [];
 const targetPositions = [];
 
-for (let i = 0; i < angle.length; i++) {
+for (let i = 0; i < CUBE_COUNT; i++) {
+    const row = Math.floor(i / gridSize);
+    const col = i % gridSize;
+
+    // Center the grid around (0,0)
+    const x = (col - (gridSize - 1) / 2) * spacing;
+    const y = (row - (gridSize - 1) / 2) * spacing;
+
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshStandardMaterial({
         color: 0x00ff00,
         emissive: 0x00ff00,
-        emissiveIntensity: 0.3  ,
+        emissiveIntensity: 0.3,
     });
 
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(angle[i][0], angle[i][1], -10);
+    mesh.position.set(x, y, -10);
     scene.add(mesh);
     cube.push(mesh);
 
-    originalPositions.push({ x: angle[i][0], y: angle[i][1] });
-    targetPositions.push({ x: angle[i][0], y: angle[i][1] });
+    originalPositions.push({ x, y });
+    targetPositions.push({ x, y });
 }
+
+
 
 // Lighting to support emissive
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -91,6 +100,27 @@ window.addEventListener('mouseup', () => {
         targetPositions[i].y = originalPositions[i].y;
     });
 });
+
+// Enable for mobile touch for test only
+window.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isMouseDown = true;
+    rotation = 0.05;
+    cube.forEach((c, i) => {
+        targetPositions[i].x = originalPositions[i].x * 5;
+        targetPositions[i].y = originalPositions[i].y * 5;
+    });
+}, { passive: false });
+
+window.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    isMouseDown = false;
+    rotation = 0.01;
+    cube.forEach((c, i) => {
+        targetPositions[i].x = originalPositions[i].x;
+        targetPositions[i].y = originalPositions[i].y;
+    });
+}, { passive: false });
 
 // Animate
 function animate() {
