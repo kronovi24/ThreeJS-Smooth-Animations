@@ -75,6 +75,15 @@ let clickCount = 0;
 const colors = [
     0xff0000, 0x00ff00 , 0x7513CC , 0xCC13a8 , 0x2e1fe7  ];
 
+// window responsive
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+});
+
 window.addEventListener('click', () => {
     clickCount = (clickCount + 1) % colors.length;
     cube.forEach(c => {
