@@ -28,41 +28,52 @@ window.addEventListener('mousemove', (event) => {
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 });
 
-const CUBE_COUNT = 16; // Change this value as needed
+
+let CUBE_COUNT = 9; // Change this value as needed
 
 // Calculate grid size (square or nearly square)
-const gridSize = Math.ceil(Math.sqrt(CUBE_COUNT));
-const spacing = 3; // Distance between cubes
+let gridSize = Math.ceil(Math.sqrt(CUBE_COUNT));
+let spacing = 3; // Distance between cubes
 
 let cube = [];
 const originalPositions = [];
 const targetPositions = [];
 
-for (let i = 0; i < CUBE_COUNT; i++) {
-    const row = Math.floor(i / gridSize);
-    const col = i % gridSize;
 
-    // Center the grid around (0,0)
-    const x = (col - (gridSize - 1) / 2) * spacing;
-    const y = (row - (gridSize - 1) / 2) * spacing;
 
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({
-        color: 0x00ff00,
-        emissive: 0x00ff00,
-        emissiveIntensity: 0.3,
-    });
+// initialize cubes
+function initCubes(){
 
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, -10);
-    scene.add(mesh);
-    cube.push(mesh);
+    // calculate grid size in case CUBE_COUNT changed
+    const gridSize = Math.ceil(Math.sqrt(CUBE_COUNT));
+    const spacing = 3;
+    
+    for (let i = 0; i < CUBE_COUNT; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
 
-    originalPositions.push({ x, y });
-    targetPositions.push({ x, y });
+        // Center the grid around (0,0)
+        const x = (col - (gridSize - 1) / 2) * spacing;
+        const y = (row - (gridSize - 1) / 2) * spacing;
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0x00ff00,
+            emissive: 0x00ff00,
+            emissiveIntensity: 0.3,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, -10);
+        scene.add(mesh);
+        cube.push(mesh);
+
+        originalPositions.push({ x, y });
+        targetPositions.push({ x, y });
+    }
 }
 
-
+initCubes();
 
 // Lighting to support emissive
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -84,21 +95,26 @@ window.addEventListener('resize', () => {
     bloomPass.resolution.set(window.innerWidth, window.innerHeight);
 });
 
-window.addEventListener('click', () => {
-    clickCount = (clickCount + 1) % colors.length;
-    cube.forEach(c => {
-        c.material.color.set(colors[clickCount]);
-        c.material.emissive.set(colors[clickCount]);
-    });
+window.addEventListener('click', (event) => {
+    // Only trigger if clicking on the renderer's canvas
+    if (event.target === renderer.domElement) {
+        clickCount = (clickCount + 1) % colors.length;
+        cube.forEach(c => {
+            c.material.color.set(colors[clickCount]);
+            c.material.emissive.set(colors[clickCount]);
+        });
+    }
 });
 
-window.addEventListener('mousedown', () => {
-    isMouseDown = true;
-    rotation = 0.05;
-    cube.forEach((c, i) => {
-        targetPositions[i].x = originalPositions[i].x * 5;
-        targetPositions[i].y = originalPositions[i].y * 5;
-    });
+window.addEventListener('mousedown', (event) => {
+    if (event.target === renderer.domElement) {
+        isMouseDown = true;
+        rotation = 0.05;
+        cube.forEach((c, i) => {
+            targetPositions[i].x = originalPositions[i].x * 5;
+            targetPositions[i].y = originalPositions[i].y * 5;
+        });
+    }
 });
 
 window.addEventListener('mouseup', () => {
@@ -131,6 +147,9 @@ window.addEventListener('touchend', (e) => {
     });
 }, { passive: false });
 
+
+
+
 // Animate
 function animate() {
     requestAnimationFrame(animate);
@@ -154,3 +173,19 @@ function animate() {
 }
 
 animate();
+
+window.reRender = reRender;
+function reRender(){
+    cube.forEach(mesh => {
+        scene.remove(mesh);
+        if (mesh.geometry) mesh.geometry.dispose();
+        if (mesh.material) mesh.material.dispose();
+    });
+    cube.length = 0;
+    originalPositions.length = 0;
+    targetPositions.length = 0;
+
+    
+    CUBE_COUNT = document.getElementById('cube_count').value
+    initCubes();
+}
