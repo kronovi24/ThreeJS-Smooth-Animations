@@ -39,7 +39,9 @@ let cube = [];
 const originalPositions = [];
 const targetPositions = [];
 
-
+// movements
+let expandValue = 5;
+let rotationValue = 0.01;
 
 // initialize cubes
 function initCubes(){
@@ -109,17 +111,17 @@ window.addEventListener('click', (event) => {
 window.addEventListener('mousedown', (event) => {
     if (event.target === renderer.domElement) {
         isMouseDown = true;
-        rotation = 0.05;
+        rotation = rotationValue * 5;
         cube.forEach((c, i) => {
-            targetPositions[i].x = originalPositions[i].x * 5;
-            targetPositions[i].y = originalPositions[i].y * 5;
+            targetPositions[i].x = originalPositions[i].x * expandValue;
+            targetPositions[i].y = originalPositions[i].y * expandValue;
         });
     }
 });
 
 window.addEventListener('mouseup', () => {
     isMouseDown = false;
-    rotation = 0.01;
+    rotation = rotationValue;
     cube.forEach((c, i) => {
         targetPositions[i].x = originalPositions[i].x;
         targetPositions[i].y = originalPositions[i].y;
@@ -176,16 +178,20 @@ animate();
 
 window.reRender = reRender;
 function reRender(){
+    expandValue = Number(document.getElementById('expand_value').value);
+    rotationValue = Number(document.getElementById('rotation_value').value);
+    rotation = rotationValue;
+    CUBE_COUNT = Number(document.getElementById('cube_count').value);
+
     cube.forEach(mesh => {
         scene.remove(mesh);
         if (mesh.geometry) mesh.geometry.dispose();
         if (mesh.material) mesh.material.dispose();
     });
+
     cube.length = 0;
     originalPositions.length = 0;
     targetPositions.length = 0;
 
-    
-    CUBE_COUNT = document.getElementById('cube_count').value
     initCubes();
 }
